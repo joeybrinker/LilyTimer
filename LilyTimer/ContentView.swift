@@ -41,14 +41,19 @@ struct ContentView: View {
             ZStack {
                 Color.gray
                     .ignoresSafeArea()
-                VStack{
-                    Text("Work Time")
-                    Slider(value: $workTime, in: 0...60, step: 1)
-                        .padding()
-                    Text("\(Int(workTime / 60)) Minutes")
-                    Slider(value: $breakTime, in: 0...60, step: 1)
-                        .padding()
-                    Text("\(Int(breakTime / 60)) Minutes")
+                VStack(spacing: 100){
+                    VStack{
+                        Text("Work Time")
+                        Slider(value: $workTime, in: 0...60, step: 1)
+                            .padding()
+                        Text("\(Int(workTime / 60)) Minutes")
+                    }
+                    VStack{
+                        Text("Break Time")
+                        Slider(value: $breakTime, in: 0...60, step: 1)
+                            .padding()
+                        Text("\(Int(breakTime / 60)) Minutes")
+                    }
                 }
                 
             }
