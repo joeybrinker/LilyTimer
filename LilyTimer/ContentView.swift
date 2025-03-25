@@ -11,6 +11,7 @@ struct ContentView: View {
     
     @State private var isStarted: Bool = false
     @State private var isPaused: Bool = false
+    
         
     var body: some View {
         NavigationView {
