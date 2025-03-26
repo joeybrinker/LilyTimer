@@ -12,6 +12,9 @@ struct ContentView: View {
     @State private var workIsStarted: Bool = false
     @State private var breakIsStarted: Bool = false
     @State private var isPaused: Bool = false
+    @State private var showAlert: Bool = false
+    @State private var alertMessage: String = ""
+    @State private var isSuccess: Bool = false
     
     // Timer that updates every 1 second
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
@@ -35,7 +38,6 @@ struct ContentView: View {
             return imageNames[phase]
         }
     
-        
     var body: some View {
         NavigationView {
             ZStack {
@@ -129,10 +131,40 @@ struct ContentView: View {
                                     .font(.system(size: 48).weight(.thin))
                             }
                         }
+                        .padding(.horizontal, 50)
+                        
                     }
                 }
-                .padding()
+                // (here3)Start Button
+                else{
+                    Button{
+                        //Action
+                        isStarted.toggle()
+                    } label: {
+                        ZStack{
+                            RoundedRectangle(cornerRadius: 24)
+                                .frame(width: 310, height: 90)
+                                .foregroundStyle(.gray)
+                            Text("Start")
+                                .font(.system(size: 48) .weight(.thin))
+                        }
+                    }
+                }//
+                alert(isPresented: $showAlert) {
+                    if isSuccess {
+                        return Alert(title: Text("Hey"), message:
+                                        Text("Are you sure you want to stop!"), dismissButton:
+                                .default(Text("OK")))
+                    } else {
+                        return Alert(title: Text ("Enjoy Your Break"), message:
+                                        Text(alertMessage), dismissButton: .default(Text("OK")))
+                    }
+                }
             }
+            
+        }
+        .foregroundStyle(.white)
+    }
             .onReceive(timer) { _ in
                 if !isPaused {
                     if workIsStarted && remainingTime > 0 {
@@ -153,8 +185,6 @@ struct ContentView: View {
         }
         .foregroundStyle(.white)
     }
-    
-}
 
 #Preview {
     ContentView()
