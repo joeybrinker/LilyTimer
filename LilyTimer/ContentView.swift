@@ -43,34 +43,36 @@ struct ContentView: View {
                     .ignoresSafeArea()
                 VStack(spacing: 100){
                     VStack{
+                        // Work time slider
                         Text("Work Time")
                         Slider(value: $workTime, in: 0...60, step: 1)
                             .padding()
                         Text("\(Int(workTime / 60)) Minutes")
                     }
                     VStack{
+                        // Break time slider
                         Text("Break Time")
                         Slider(value: $breakTime, in: 0...60, step: 1)
                             .padding()
                         Text("\(Int(breakTime / 60)) Minutes")
                     }
                 }
-                
             }
             ZStack{
                 Color.black
                     .ignoresSafeArea()
                 VStack{
+                    // Time Display
                     if !breakIsStarted {
                         Text(workIsStarted ? "\(Int(remainingTime / 60)):\(Int(remainingTime) % 60)" : "Start")
-                            .font(.system(size: 48) .weight(.thin))
                     }
                     else {
                         Text("\(Int(remainingBreakTime / 60)):\(Int(remainingBreakTime) % 60)")
-                            .font(.system(size: 48) .weight(.thin))
                     }
                     
                     Spacer()
+                    
+                    // Tree Image
                     if breakIsStarted {
                         Image("Stage5")
                     } else {
@@ -90,7 +92,6 @@ struct ContentView: View {
                                         .frame(width: 90, height: 90)
                                         .foregroundStyle(.gray)
                                     Image(systemName: isPaused ? "play.fill" : "pause")
-                                        .font(.system(size: 48).weight(.thin))
                                 }
                             }
                             .padding(.horizontal, 50)
@@ -107,7 +108,6 @@ struct ContentView: View {
                                         .frame(width: 90, height: 90)
                                         .foregroundStyle(.red)
                                     Image(systemName: "stop.circle")
-                                        .font(.system(size: 48).weight(.thin))
                                 }
                             }
                             .padding(.horizontal, 50)
@@ -126,13 +126,14 @@ struct ContentView: View {
                                     .frame(width: 310, height: 90)
                                     .foregroundStyle(.gray)
                                 Text("Start")
-                                    .font(.system(size: 48).weight(.thin))
                             }
                         }
                     }
                 }
+                .font(.system(size: 48) .weight(.thin))
                 .padding()
             }
+            // Timer logic
             .onReceive(timer) { _ in
                 if !isPaused {
                     if workIsStarted && remainingTime > 0 {
