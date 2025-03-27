@@ -33,9 +33,9 @@ struct ContentView: View {
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
     /// Total work time (in seconds) set by the user.
-    @State private var workTime: Double = 0
+    @State private var workTime: Double = 3600
     /// Total break time (in seconds) set by the user.
-    @State private var breakTime: Double = 0
+    @State private var breakTime: Double = 900
     /// Remaining time (in seconds) for the work period.
     @State private var remainingTime: Double = 0
     /// Remaining time (in seconds) for the break period.
@@ -87,7 +87,7 @@ struct ContentView: View {
                 VStack {
                     // Timer display
                     if !breakIsStarted {
-                        Text(workIsStarted ? workTimerText : "Start")
+                        Text(workIsStarted ? workTimerText : "Start Work")
                             .font(.system(size: 48).weight(.thin))
                     } else {
                         Text(breakTimerText)
@@ -132,8 +132,24 @@ struct ContentView: View {
                     }
                 }
                 .foregroundStyle(.white)
+                
+                // MARK: - Timer Update Logic
                 .onReceive(timer) { _ in
-                    updateTimer()
+                    if workIsStarted && remainingTime > 0 {
+                        remainingTime -= 1
+                    } else if workIsStarted && remainingTime <= 0 {
+                        // Work timer ended: switch to break timer.
+                        workIsStarted = false
+                        breakIsStarted = true
+                        showAlert = true
+                        workOverNotification()
+                    } else if breakIsStarted && remainingBreakTime > 0 {
+                        remainingBreakTime -= 1
+                    } else if breakIsStarted && remainingBreakTime <= 0 {
+                        // Break timer ended.
+                        breakIsStarted = false
+                        breakOverNotification()
+                    }
                 }
                 .onAppear {
                     requestNotificationPermissions()
@@ -142,28 +158,7 @@ struct ContentView: View {
         }
     }
     
-    // MARK: - Timer Update Logic
-    
-    /// Updates the timers on each tick.
-    private func updateTimer() {
-        guard !isPaused else { return }
-        
-        if workIsStarted && remainingTime > 0 {
-            remainingTime -= 1
-        } else if workIsStarted && remainingTime <= 0 {
-            // Work timer ended: switch to break timer.
-            workIsStarted = false
-            breakIsStarted = true
-            showAlert = true
-            workOverNotification()
-        } else if breakIsStarted && remainingBreakTime > 0 {
-            remainingBreakTime -= 1
-        } else if breakIsStarted && remainingBreakTime <= 0 {
-            // Break timer ended.
-            breakIsStarted = false
-            breakOverNotification()
-        }
-    }
+
     
     // MARK: - Notification Permission
     
@@ -189,14 +184,14 @@ struct ContentView: View {
                 // Work time slider
                 VStack {
                     Text("Work Time")
-                    Slider(value: $workTime, in: 0...20, step: 1)
+                    Slider(value: $workTime, in: 0...3600, step: 60)
                         .padding()
                     Text("\(Int(workTime / 60)) Minutes")
                 }
                 // Break time slider
                 VStack {
                     Text("Break Time")
-                    Slider(value: $breakTime, in: 0...20, step: 1)
+                    Slider(value: $breakTime, in: 0...1800, step: 60)
                         .padding()
                     Text("\(Int(breakTime / 60)) Minutes")
                 }
